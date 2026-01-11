@@ -1,6 +1,7 @@
 import React from 'react';
 import Image from 'next/image';
-import { Bell, Search } from 'lucide-react';
+import Link from 'next/link';
+import { Bell, Search, LogOut } from 'lucide-react';
 import {
   SidebarProvider,
   Sidebar,
@@ -69,7 +70,12 @@ function Header() {
           <DropdownMenuItem>Settings</DropdownMenuItem>
           <DropdownMenuItem>Support</DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem>Logout</DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link href="/">
+                <LogOut className="mr-2 h-4 w-4" />
+                <span>Logout</span>
+            </Link>
+            </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     </header>
@@ -86,7 +92,7 @@ export default function PortalLayout({
     <SidebarProvider>
       <Sidebar>
         <SidebarHeader>
-          <div className="flex items-center gap-2 p-2">
+          <Link href="/" className="flex items-center gap-2 p-2">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
@@ -98,7 +104,7 @@ export default function PortalLayout({
             <h1 className="text-xl font-headline font-bold text-sidebar-foreground group-data-[collapsible=icon]:hidden">
               MARUTHI CLINIC
             </h1>
-          </div>
+          </Link>
         </SidebarHeader>
         <SidebarContent>
           <SidebarMenu>
