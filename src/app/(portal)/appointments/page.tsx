@@ -22,12 +22,19 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuTrigger,
   } from "@/components/ui/dropdown-menu"
-import { appointments } from '@/lib/data';
+import { appointments, doctors } from '@/lib/data';
 
 export default function AppointmentsPage() {
   return (
@@ -60,7 +67,18 @@ export default function AppointmentsPage() {
                     <Label htmlFor="doctor" className="text-right">
                       Doctor
                     </Label>
-                    <Input id="doctor" value="Dr. Smith" className="col-span-3" />
+                    <Select>
+                        <SelectTrigger className="col-span-3">
+                            <SelectValue placeholder="Select a doctor" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {doctors.map((doctor) => (
+                                <SelectItem key={doctor.id} value={doctor.id}>
+                                    {doctor.name} ({doctor.specialty})
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
                   </div>
                   <div className="grid grid-cols-4 items-center gap-4">
                     <Label htmlFor="date" className="text-right">

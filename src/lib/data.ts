@@ -1,7 +1,6 @@
 import {
   CalendarIcon,
   FileTextIcon,
-  HeartPulse,
   LayoutDashboardIcon,
   MessageSquareIcon,
   PillIcon,
@@ -25,11 +24,6 @@ export const navItems: NavItem[] = [
   { href: '/medications', label: 'Medications', iconName: 'PillIcon' },
   { href: '/messages', label: 'Messages', iconName: 'MessageSquareIcon' },
   { href: '/records', label: 'Health Records', iconName: 'FileTextIcon' },
-  {
-    href: '/symptom-checker',
-    label: 'Symptom Checker',
-    iconName: 'HeartPulse',
-  },
 ];
 
 export const iconMap: { [key: string]: LucideIcon } = {
@@ -38,7 +32,6 @@ export const iconMap: { [key: string]: LucideIcon } = {
   PillIcon,
   MessageSquareIcon,
   FileTextIcon,
-  HeartPulse,
 };
 
 
@@ -60,6 +53,17 @@ export const appointments = [
     status: 'Confirmed',
   },
 ];
+
+export const doctors = [
+    { id: 'dr-smith', name: 'Dr. John Smith', specialty: 'Cardiology' },
+    { id: 'dr-jones', name: 'Dr. Sarah Jones', specialty: 'Dermatology' },
+    { id: 'dr-chen', name: 'Dr. Wei Chen', specialty: 'Neurology' },
+    { id: 'dr-patel', name: 'Dr. Anika Patel', specialty: 'Pediatrics' },
+    { id: 'dr-williams', name: 'Dr. Ben Williams', specialty: 'General Surgery' },
+    { id: 'dr-davis', name: 'Dr. Olivia Davis', specialty: 'Kidney Specialist' },
+    { id: 'dr-roberts', name: 'Dr. Henry Roberts', specialty: 'Brain Surgeon' },
+  ];
+  
 
 export const medications = [
   {
