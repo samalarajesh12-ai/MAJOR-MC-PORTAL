@@ -110,7 +110,13 @@ export default function PatientRegisterPage() {
           videoRef.current.srcObject = stream;
         }
       } catch (error) {
+        console.error('Error accessing camera:', error);
         setHasCameraPermission(false);
+        toast({
+          variant: 'destructive',
+          title: 'Camera Access Denied',
+          description: 'Please enable camera permissions in your browser settings to use biometric features.',
+        });
       }
     };
     getCameraPermission();
@@ -120,7 +126,7 @@ export default function PatientRegisterPage() {
         stream.getTracks().forEach((track) => track.stop());
       }
     };
-  }, []);
+  }, [toast]);
 
   const handleRegister = (values: z.infer<typeof formSchema>) => {
     if (!faceImage) {

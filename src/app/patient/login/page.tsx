@@ -39,7 +39,13 @@ export default function PatientLoginPage() {
             videoRef.current.srcObject = stream;
           }
         } catch (error) {
+          console.error('Error accessing camera:', error);
           setHasCameraPermission(false);
+          toast({
+            variant: 'destructive',
+            title: 'Camera Access Denied',
+            description: 'Please enable camera permissions in your browser settings to use Face ID.',
+          });
         }
       };
       getCameraPermission();
@@ -50,7 +56,7 @@ export default function PatientLoginPage() {
         }
       };
     }
-  }, [loginMethod]);
+  }, [loginMethod, toast]);
 
   const handleLogin = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();

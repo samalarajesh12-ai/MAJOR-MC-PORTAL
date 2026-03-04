@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -44,7 +45,13 @@ export default function DoctorRegisterPage() {
           videoRef.current.srcObject = stream;
         }
       } catch (error) {
+        console.error('Error accessing camera:', error);
         setHasCameraPermission(false);
+        toast({
+          variant: 'destructive',
+          title: 'Camera Access Denied',
+          description: 'Please enable camera permissions in your browser settings to complete doctor registration.',
+        });
       }
     };
 
@@ -56,7 +63,7 @@ export default function DoctorRegisterPage() {
             stream.getTracks().forEach((track) => track.stop());
         }
     };
-  }, []);
+  }, [toast]);
   
   const handleRegister = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
