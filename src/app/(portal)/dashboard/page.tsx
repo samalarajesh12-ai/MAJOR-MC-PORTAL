@@ -45,9 +45,6 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Calendar } from '@/components/ui/calendar';
-import { cn } from '@/lib/utils';
 
 const COMMON_DISEASES = [
   "Hypertension (High Blood Pressure)",
@@ -290,39 +287,13 @@ export default function DashboardPage() {
                 />
               </div>
               <div className="space-y-2 flex flex-col">
-                <Label className="font-semibold mb-1">Date of Birth</Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant={"outline"}
-                      className={cn(
-                        "w-full pl-3 text-left font-normal",
-                        !editDob && "text-muted-foreground"
-                      )}
-                    >
-                      {editDob ? (
-                        format(new Date(editDob), "PPP")
-                      ) : (
-                        <span>Pick a date</span>
-                      )}
-                      <CalendarIconIcon className="ml-auto h-4 w-4 opacity-50" />
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      captionLayout="dropdown"
-                      startMonth={new Date(1950, 0)}
-                      endMonth={new Date(2030, 11)}
-                      selected={editDob ? new Date(editDob) : undefined}
-                      onSelect={(date) => setEditDob(date?.toISOString())}
-                      disabled={(date) =>
-                        date > new Date("2030-12-31") || date < new Date("1950-01-01")
-                      }
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
+                <Label htmlFor="edit-dob" className="font-semibold mb-1">Date of Birth</Label>
+                <Input 
+                  id="edit-dob"
+                  type="date"
+                  value={editDob ? editDob.split('T')[0] : ''} 
+                  onChange={(e) => setEditDob(e.target.value)}
+                />
               </div>
             </div>
 
