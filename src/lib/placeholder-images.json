@@ -11,6 +11,12 @@
       "description": "An AI-powered face analysis and biometric scanning visualization.",
       "imageUrl": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=1080",
       "imageHint": "face recognition"
+    },
+    {
+      "id": "hero-doctor-patient",
+      "description": "A professional interaction between a doctor and a patient in a modern hospital setting.",
+      "imageUrl": "https://images.unsplash.com/photo-1581056344415-3abb473d3b91?auto=format&fit=crop&q=80&w=1080",
+      "imageHint": "doctor patient"
     }
   ]
 }

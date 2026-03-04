@@ -1,10 +1,11 @@
+
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Stethoscope, User, ShieldAlert } from 'lucide-react';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 export default function LandingPage() {
-  const heroImage = PlaceHolderImages.find(img => img.id === 'hero-face-analysis');
+  const heroImage = PlaceHolderImages.find(img => img.id === 'hero-doctor-patient');
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -32,14 +33,14 @@ export default function LandingPage() {
         <section className="container mx-auto grid grid-cols-1 items-center gap-12 px-6 py-24 md:grid-cols-2 lg:py-32">
           <div className="space-y-6">
             <h1 className="text-5xl font-extrabold tracking-tighter text-primary md:text-6xl lg:text-8xl font-headline underline decoration-primary/30 underline-offset-8">
-              Face Analysis
+              Compassionate Care
             </h1>
             <div className="space-y-4">
                <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground">
-                AI-powered Health Assessment
+                Advanced Healthcare at Your Fingertips
               </h2>
               <p className="max-w-xl text-lg text-muted-foreground leading-relaxed">
-                Experience the future of healthcare at Maruthi Clinic. Our advanced AI-driven tools provide deep insights into your health, starting with professional biometric face analysis in a clinical setting you can trust.
+                Experience the perfect blend of technology and human expertise at Maruthi Clinic. Our patient portal provides seamless access to your health records, appointments, and personalized care plans.
               </p>
             </div>
             <div className="flex gap-4 pt-4">
@@ -54,16 +55,16 @@ export default function LandingPage() {
           <div className="flex justify-center">
             <div className="relative overflow-hidden rounded-2xl shadow-2xl border-4 border-primary/10 bg-black group">
               <img
-                src={heroImage?.imageUrl || "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=1080"}
-                alt="AI-powered Face Analysis"
+                src={heroImage?.imageUrl || "https://images.unsplash.com/photo-1581056344415-3abb473d3b91?auto=format&fit=crop&q=80&w=1080"}
+                alt="Healthcare Excellence"
                 className="object-cover aspect-[4/3] w-full max-w-[600px] transition-transform duration-700 group-hover:scale-105"
-                data-ai-hint={heroImage?.imageHint || "face recognition"}
+                data-ai-hint={heroImage?.imageHint || "doctor patient"}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-primary/30 to-transparent pointer-events-none"></div>
               <div className="absolute top-4 left-4 p-2 bg-black/40 backdrop-blur-md rounded-lg border border-white/10">
                 <div className="flex items-center gap-2">
                   <div className="h-2 w-2 rounded-full bg-primary animate-pulse" />
-                  <span className="text-[10px] font-medium text-white tracking-widest uppercase">Scanning Identity</span>
+                  <span className="text-[10px] font-medium text-white tracking-widest uppercase">Patient-Centric Care</span>
                 </div>
               </div>
             </div>
