@@ -20,14 +20,27 @@ export default function AdminLoginPage() {
   const router = useRouter();
   const { toast } = useToast();
 
-  const handleLogin = (event: React.FormEvent) => {
+  const handleLogin = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setStorageItem('currentUser', { id: 'admin', role: 'admin', firstName: 'Admin' });
-    toast({
-      title: 'Login Successful',
-      description: 'Redirecting to management dashboard...',
-    });
-    router.push('/admin/dashboard');
+    const formData = new FormData(event.currentTarget);
+    const email = formData.get('email') as string;
+    const password = formData.get('password') as string;
+
+    // Updated credentials per user request: admin.clinic / 123456
+    if (email === 'admin.clinic' && password === '123456') {
+      setStorageItem('currentUser', { id: 'admin', role: 'admin', firstName: 'Admin' });
+      toast({
+        title: 'Login Successful',
+        description: 'Redirecting to management dashboard...',
+      });
+      router.push('/admin/dashboard');
+    } else {
+      toast({
+        variant: 'destructive',
+        title: 'Authentication Failed',
+        description: 'Invalid admin identifier or security key.',
+      });
+    }
   };
 
   return (
@@ -62,18 +75,18 @@ export default function AdminLoginPage() {
         <CardContent>
           <form onSubmit={handleLogin} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Admin Email</Label>
+              <Label htmlFor="email">Admin Identifier</Label>
               <Input
                 id="email"
-                type="email"
-                placeholder="admin@maruthi.clinic"
+                name="email"
+                type="text"
+                placeholder="admin.clinic"
                 required
-                defaultValue="admin@maruthi.clinic"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Security Password</Label>
-              <Input id="password" type="password" required defaultValue="password" />
+              <Label htmlFor="password">Security Key</Label>
+              <Input id="password" name="password" type="password" required />
             </div>
             <Button type="submit" className="w-full h-11">
               Authenticate
