@@ -1,24 +1,17 @@
+
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Stethoscope, User, ShieldAlert } from 'lucide-react';
+import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 export default function LandingPage() {
+  const heroImage = PlaceHolderImages.find(img => img.id === 'hero-skin-analysis');
+
   return (
     <div className="flex min-h-screen flex-col">
       <header className="flex h-16 items-center justify-between border-b bg-background/80 px-6 backdrop-blur-sm">
         <Link href="/" className="flex items-center gap-2">
-        <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-            className="h-7 w-7 text-primary"
-          >
-            <path
-              fillRule="evenodd"
-              d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12.75 9a.75.75 0 00-1.5 0v2.25H9a.75.75 0 000 1.5h2.25V15a.75.75 0 001.5 0v-2.25H15a.75.75 0 000-1.5h-2.25V9z"
-              clipRule="evenodd"
-            />
-          </svg>
+          <Stethoscope className="h-7 w-7 text-primary" />
           <h1 className="text-xl font-bold tracking-tight text-foreground">
             MARUTHI CLINIC
           </h1>
@@ -39,29 +32,27 @@ export default function LandingPage() {
       <main className="flex-1">
         <section className="container mx-auto grid grid-cols-1 items-center gap-12 px-6 py-24 md:grid-cols-2 lg:py-32">
           <div className="space-y-6">
-            <h1 className="text-4xl font-extrabold tracking-tighter text-primary md:text-5xl lg:text-6xl">
-              Modern Healthcare, Right at Your Fingertips.
+            <h1 className="text-4xl font-extrabold tracking-tighter text-primary md:text-5xl lg:text-7xl">
+              Skin Analysis: AI-powered Health Assessment.
             </h1>
-            <p className="max-w-xl text-lg text-muted-foreground">
-              Maruthi Clinic provides a seamless digital experience for patients
-              and doctors. Manage appointments, access records, and communicate
-              securely.
+            <p className="max-w-xl text-lg text-muted-foreground leading-relaxed">
+              Experience the future of healthcare at Maruthi Clinic. Our advanced AI-driven tools provide deep insights into your health, starting with professional biometric skin analysis.
             </p>
             <div className="flex gap-4">
-              <Button size="lg" asChild>
+              <Button size="lg" asChild className="px-8">
                 <Link href="/patient/register">Get Started Today</Link>
               </Button>
-              <Button size="lg" variant="outline" asChild>
+              <Button size="lg" variant="outline" asChild className="px-8">
                 <Link href="#features">Learn More</Link>
               </Button>
             </div>
           </div>
           <div className="flex justify-center">
             <img
-              src="https://picsum.photos/seed/health-team/600/400"
-              alt="Healthcare professionals"
-              className="rounded-xl shadow-2xl"
-              data-ai-hint="healthcare professionals team"
+              src={heroImage?.imageUrl || "https://picsum.photos/seed/skin-analysis/600/400"}
+              alt="AI-powered Skin Analysis"
+              className="rounded-xl shadow-2xl border-4 border-primary/10 object-cover aspect-video"
+              data-ai-hint={heroImage?.imageHint || "medical technology"}
             />
           </div>
         </section>
@@ -75,33 +66,32 @@ export default function LandingPage() {
               </p>
             </div>
             <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
-              <div className="flex flex-col items-center text-center">
+              <div className="flex flex-col items-center text-center p-6 bg-card rounded-xl border border-primary/5 shadow-sm">
                 <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary text-primary-foreground">
                   <User className="h-8 w-8" />
                 </div>
                 <h3 className="mb-2 text-xl font-semibold">Patient Portal</h3>
                 <p className="text-muted-foreground">
                   Access your health records, schedule appointments, and message
-                  your doctor.
+                  your doctor securely.
                 </p>
               </div>
-              <div className="flex flex-col items-center text-center">
+              <div className="flex flex-col items-center text-center p-6 bg-card rounded-xl border border-primary/5 shadow-sm">
                 <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary text-primary-foreground">
                   <Stethoscope className="h-8 w-8" />
                 </div>
                 <h3 className="mb-2 text-xl font-semibold">Doctor Portal</h3>
                 <p className="text-muted-foreground">
-                  Manage your patient list, review records, and streamline your
-                  workflow.
+                  Manage your patient list, review AI-assisted records, and streamline your clinical workflow.
                 </p>
               </div>
-              <div className="flex flex-col items-center text-center">
+              <div className="flex flex-col items-center text-center p-6 bg-card rounded-xl border border-primary/5 shadow-sm">
                 <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary text-primary-foreground">
                   <ShieldAlert className="h-8 w-8" />
                 </div>
                 <h3 className="mb-2 text-xl font-semibold">Admin Access</h3>
                 <p className="text-muted-foreground">
-                  Oversee clinic operations with secure, confidential access.
+                  Oversee clinic operations with secure management tools and detailed staff oversight.
                 </p>
               </div>
             </div>
@@ -117,19 +107,19 @@ export default function LandingPage() {
           <nav className="flex gap-4">
             <Link
               href="/admin/login"
-              className="text-sm text-muted-foreground hover:text-primary"
+              className="text-sm text-muted-foreground hover:text-primary transition-colors"
             >
               Admin Login
             </Link>
             <Link
               href="#"
-              className="text-sm text-muted-foreground hover:text-primary"
+              className="text-sm text-muted-foreground hover:text-primary transition-colors"
             >
               Privacy Policy
             </Link>
             <Link
               href="#"
-              className="text-sm text-muted-foreground hover:text-primary"
+              className="text-sm text-muted-foreground hover:text-primary transition-colors"
             >
               Terms of Service
             </Link>

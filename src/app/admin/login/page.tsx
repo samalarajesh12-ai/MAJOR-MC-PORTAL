@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -12,7 +13,7 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { ShieldAlert } from 'lucide-react';
+import { ShieldAlert, Stethoscope } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { setStorageItem } from '@/lib/storage';
 
@@ -26,7 +27,6 @@ export default function AdminLoginPage() {
     const email = formData.get('email') as string;
     const password = formData.get('password') as string;
 
-    // Updated credentials per user request: admin.clinic / 123456
     if (email === 'admin.clinic' && password === '123456') {
       setStorageItem('currentUser', { id: 'admin', role: 'admin', firstName: 'Admin' });
       toast({
@@ -46,18 +46,7 @@ export default function AdminLoginPage() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-muted/40 p-4">
        <Link href="/" className="mb-8 flex items-center gap-2">
-       <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-            className="h-8 w-8 text-primary"
-          >
-            <path
-              fillRule="evenodd"
-              d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12.75 9a.75.75 0 00-1.5 0v2.25H9a.75.75 0 000 1.5h2.25V15a.75.75 0 001.5 0v-2.25H15a.75.75 0 000-1.5h-2.25V9z"
-              clipRule="evenodd"
-            />
-          </svg>
+            <Stethoscope className="h-8 w-8 text-primary" />
             <h1 className="text-2xl font-bold tracking-tight text-foreground font-headline">
                 MARUTHI CLINIC
             </h1>
