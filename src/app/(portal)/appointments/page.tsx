@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -37,16 +38,26 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
   } from "@/components/ui/dropdown-menu"
-import { getStorageItem, seedStorage } from '@/lib/storage';
+import { getStorageItem, setStorageItem, seedStorage } from '@/lib/storage';
 import { format, parseISO, compareAsc } from 'date-fns';
+import { useToast } from '@/hooks/use-toast';
 
 export default function AppointmentsPage() {
+  const { toast } = useToast();
   const [appointments, setAppointments] = useState<any[]>([]);
   const [doctors, setDoctors] = useState<any[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
+  const [isMounted, setIsMounted] = useState(false);
+
+  // Form State
+  const [formData, setFormData] = useState({
+    doctorId: '',
+    date: '',
+    time: '',
+  });
 
   useEffect(() => {
-    // Set initial date on client to avoid hydration mismatch
+    setIsMounted(true);
     setSelectedDate(new Date());
     
     seedStorage();
@@ -55,12 +66,69 @@ export default function AppointmentsPage() {
     
     // Sort appointments in sequential (chronological) order
     const sorted = [...storedAppointments].sort((a, b) => {
-      return compareAsc(parseISO(a.date), parseISO(b.date));
+      const dateA = parseISO(`${a.date}T${convertTo24Hour(a.time)}`);
+      const dateB = parseISO(`${b.date}T${convertTo24Hour(b.time)}`);
+      return compareAsc(dateA, dateB);
     });
     
     setAppointments(sorted);
     setDoctors(storedDoctors);
   }, []);
+
+  const convertTo24Hour = (timeStr: string) => {
+    if (!timeStr) return '00:00';
+    const parts = timeStr.split(' ');
+    if (parts.length < 2) return timeStr;
+    const [time, modifier] = parts;
+    let [hours, minutes] = time.split(':');
+    if (hours === '12') hours = '00';
+    if (modifier === 'PM') hours = (parseInt(hours, 10) + 12).toString();
+    return `${hours.padStart(2, '0')}:${minutes}`;
+  };
+
+  const handleSchedule = () => {
+    if (!formData.doctorId || !formData.date || !formData.time) return;
+
+    const doctor = doctors.find(d => d.id === formData.doctorId);
+    const newApp = {
+      id: crypto.randomUUID(),
+      doctor: doctor?.name || doctor?.firstName || 'Clinical Provider',
+      department: doctor?.specialty || doctor?.specialization || 'General Clinic',
+      date: formData.date,
+      time: formData.time,
+      status: 'Confirmed'
+    };
+
+    const updated = [newApp, ...appointments].sort((a, b) => {
+      const dateA = parseISO(`${a.date}T${convertTo24Hour(a.time)}`);
+      const dateB = parseISO(`${b.date}T${convertTo24Hour(b.time)}`);
+      return compareAsc(dateA, dateB);
+    });
+
+    setStorageItem('appointments', updated);
+    setAppointments(updated);
+
+    // Create a notification
+    const notifications = getStorageItem<any[]>('notifications', []);
+    const newNotif = {
+      id: crypto.randomUUID(),
+      title: 'New Appointment Scheduled',
+      description: `Confirmed visit with ${newApp.doctor} for ${format(parseISO(newApp.date), 'MMM do')} at ${newApp.time}.`,
+      time: format(new Date(), 'h:mm a'),
+      type: 'profile',
+      read: false
+    };
+    setStorageItem('notifications', [newNotif, ...notifications]);
+
+    toast({
+      title: "Appointment Confirmed",
+      description: `Scheduled with ${newApp.doctor} on ${newApp.date}.`,
+    });
+
+    setFormData({ doctorId: '', date: '', time: '' });
+  };
+
+  if (!isMounted) return null;
 
   return (
     <div className="grid flex-1 items-start gap-4 md:gap-8 lg:grid-cols-3 xl:grid-cols-3">
@@ -92,7 +160,7 @@ export default function AppointmentsPage() {
                     <Label htmlFor="doctor" className="text-right">
                       Doctor
                     </Label>
-                    <Select>
+                    <Select onValueChange={(val) => setFormData({...formData, doctorId: val})}>
                         <SelectTrigger className="col-span-3">
                             <SelectValue placeholder="Select a doctor" />
                         </SelectTrigger>
@@ -109,17 +177,27 @@ export default function AppointmentsPage() {
                     <Label htmlFor="date" className="text-right">
                       Date
                     </Label>
-                    <Input id="date" type="date" className="col-span-3" />
+                    <Input 
+                      id="date" 
+                      type="date" 
+                      className="col-span-3" 
+                      onChange={(e) => setFormData({...formData, date: e.target.value})} 
+                    />
                   </div>
                   <div className="grid grid-cols-4 items-center gap-4">
                     <Label htmlFor="time" className="text-right">
                       Time
                     </Label>
-                    <Input id="time" type="time" className="col-span-3" />
+                    <Input 
+                      id="time" 
+                      type="time" 
+                      className="col-span-3" 
+                      onChange={(e) => setFormData({...formData, time: e.target.value})} 
+                    />
                   </div>
                 </div>
                 <DialogFooter>
-                  <Button type="submit">Confirm Appointment</Button>
+                  <Button type="submit" onClick={handleSchedule}>Confirm Appointment</Button>
                 </DialogFooter>
               </DialogContent>
             </Dialog>

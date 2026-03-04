@@ -117,6 +117,18 @@ export default function DashboardPage() {
       patients[patientIndex] = updatedUser;
       setStorageItem('patients', patients);
     }
+
+    // Add notification for profile update
+    const notifications = getStorageItem<any[]>('notifications', []);
+    const newNotif = {
+      id: crypto.randomUUID(),
+      title: 'Medical Profile Updated',
+      description: 'Your health records and contact information have been synchronized.',
+      time: format(new Date(), 'h:mm a'),
+      type: 'profile',
+      read: false
+    };
+    setStorageItem('notifications', [newNotif, ...notifications]);
     
     setUser(updatedUser);
     setShowProfileDialog(false);
@@ -278,21 +290,23 @@ export default function DashboardPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="edit-contact" className="font-semibold">Current Contact Number</Label>
-                <Input 
+                <input 
                   id="edit-contact" 
                   type="tel" 
                   value={editContact} 
                   onChange={(e) => setEditContact(e.target.value)}
                   placeholder="+91..."
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 />
               </div>
               <div className="space-y-2 flex flex-col">
                 <Label htmlFor="edit-dob" className="font-semibold mb-1">Date of Birth</Label>
-                <Input 
+                <input 
                   id="edit-dob"
                   type="date"
                   value={editDob ? editDob.split('T')[0] : ''} 
                   onChange={(e) => setEditDob(e.target.value)}
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 />
               </div>
             </div>

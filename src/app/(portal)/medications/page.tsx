@@ -46,9 +46,7 @@ export default function MedicationsPage() {
     setStorageItem('medications', updatedMedications);
 
     // 2. Create a new message in history
-    const currentUser = getStorageItem('currentUser', { firstName: 'Patient' });
     const messages = getStorageItem<any[]>('messages', []);
-    
     const newMessage = {
       id: crypto.randomUUID(),
       sender: 'You',
@@ -64,11 +62,21 @@ export default function MedicationsPage() {
         }
       ]
     };
+    setStorageItem('messages', [newMessage, ...messages]);
 
-    const updatedMessages = [newMessage, ...messages];
-    setStorageItem('messages', updatedMessages);
+    // 3. Create a notification
+    const notifications = getStorageItem<any[]>('notifications', []);
+    const newNotif = {
+      id: crypto.randomUUID(),
+      title: 'Refill Requested',
+      description: `Your request for ${med.name} (${med.dosage}) has been submitted.`,
+      time: format(new Date(), 'h:mm a'),
+      type: 'refill',
+      read: false
+    };
+    setStorageItem('notifications', [newNotif, ...notifications]);
 
-    // 3. Show confirmation notification
+    // 4. Show confirmation notification
     toast({
       title: "Refill Request Sent",
       description: `Your request for ${med.name} has been sent to the clinic staff. Check your messages for updates.`,
