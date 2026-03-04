@@ -5,7 +5,7 @@ import { Stethoscope, User, ShieldAlert } from 'lucide-react';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 export default function LandingPage() {
-  const heroImage = PlaceHolderImages.find(img => img.id === 'hero-skin-analysis');
+  const heroImage = PlaceHolderImages.find(img => img.id === 'hero-face-analysis');
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -33,10 +33,10 @@ export default function LandingPage() {
         <section className="container mx-auto grid grid-cols-1 items-center gap-12 px-6 py-24 md:grid-cols-2 lg:py-32">
           <div className="space-y-6">
             <h1 className="text-4xl font-extrabold tracking-tighter text-primary md:text-5xl lg:text-7xl">
-              Skin Analysis: AI-powered Health Assessment.
+              Face Analysis: AI-powered Health Assessment.
             </h1>
             <p className="max-w-xl text-lg text-muted-foreground leading-relaxed">
-              Experience the future of healthcare at Maruthi Clinic. Our advanced AI-driven tools provide deep insights into your health, starting with professional biometric skin analysis.
+              Experience the future of healthcare at Maruthi Clinic. Our advanced AI-driven tools provide deep insights into your health, starting with professional biometric face analysis.
             </p>
             <div className="flex gap-4">
               <Button size="lg" asChild className="px-8">
@@ -49,10 +49,10 @@ export default function LandingPage() {
           </div>
           <div className="flex justify-center">
             <img
-              src={heroImage?.imageUrl || "https://picsum.photos/seed/skin-analysis/600/400"}
-              alt="AI-powered Skin Analysis"
+              src={heroImage?.imageUrl || "https://picsum.photos/seed/face-analysis/600/400"}
+              alt="AI-powered Face Analysis"
               className="rounded-xl shadow-2xl border-4 border-primary/10 object-cover aspect-video"
-              data-ai-hint={heroImage?.imageHint || "medical technology"}
+              data-ai-hint={heroImage?.imageHint || "face analysis"}
             />
           </div>
         </section>
