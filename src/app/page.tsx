@@ -58,7 +58,7 @@ export default function LandingPage() {
                 src={heroImage?.imageUrl || "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=1080"}
                 alt="AI-powered Face Analysis"
                 className="object-cover aspect-square w-full max-w-[500px]"
-                data-ai-hint={heroImage?.imageHint || "face analysis"}
+                data-ai-hint={heroImage?.imageHint || "face recognition"}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-primary/20 to-transparent pointer-events-none"></div>
             </div>
