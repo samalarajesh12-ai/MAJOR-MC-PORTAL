@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { format } from 'date-fns';
 import {
@@ -33,7 +33,10 @@ import {
   TrendingUp,
   Award,
   Clock,
-  ChevronRight
+  ChevronRight,
+  Camera,
+  Upload,
+  Check
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { getStorageItem, setStorageItem, seedStorage } from '@/lib/storage';
@@ -49,7 +52,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { doctorPerformance, previousOperations, dailyAttendance } from '@/lib/data';
+import { doctorPerformance, previousOperations } from '@/lib/data';
 import { 
   BarChart, 
   Bar, 
@@ -72,7 +75,168 @@ const COMMON_DISEASES = [
   "Allergic Rhinitis"
 ];
 
-function DoctorDashboard({ user }: { user: any }) {
+function ProfileEditForm({ user, onSave, onCancel }: { user: any, onSave: (updated: any) => void, onCancel: () => void }) {
+  const { toast } = useToast();
+  const [editContact, setEditContact] = useState(user.contactNumber || '');
+  const [editDob, setEditDob] = useState(user.dateOfBirth || user.dob || '');
+  const [selectedDiseases, setSelectedDiseases] = useState<string[]>(user.selectedDiseases || []);
+  const [manualConditions, setManualConditions] = useState(user.preExistingConditions || '');
+  const [faceImage, setFaceImage] = useState<string | null>(user.faceImage || null);
+  
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isCameraActive, setIsCameraActive] = useState(false);
+
+  const startCamera = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      setIsCameraActive(true);
+      if (videoRef.current) videoRef.current.srcObject = stream;
+    } catch (err) {
+      toast({ variant: 'destructive', title: 'Camera Error', description: 'Could not access webcam.' });
+    }
+  };
+
+  const stopCamera = () => {
+    if (videoRef.current && videoRef.current.srcObject) {
+      const stream = videoRef.current.srcObject as MediaStream;
+      stream.getTracks().forEach(t => t.stop());
+      setIsCameraActive(false);
+    }
+  };
+
+  const captureImage = () => {
+    if (videoRef.current && canvasRef.current) {
+      const ctx = canvasRef.current.getContext('2d');
+      canvasRef.current.width = videoRef.current.videoWidth;
+      canvasRef.current.height = videoRef.current.videoHeight;
+      ctx?.drawImage(videoRef.current, 0, 0);
+      setFaceImage(canvasRef.current.toDataURL('image/png'));
+      stopCamera();
+    }
+  };
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => setFaceImage(reader.result as string);
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleSave = () => {
+    onSave({
+      ...user,
+      contactNumber: editContact,
+      dateOfBirth: editDob,
+      selectedDiseases,
+      preExistingConditions: manualConditions,
+      faceImage,
+      isProfileCompleted: true
+    });
+  };
+
+  return (
+    <div className="space-y-6 py-4">
+      <div className="grid grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label>Contact Number</Label>
+          <input 
+            type="tel" 
+            value={editContact} 
+            onChange={(e) => setEditContact(e.target.value)}
+            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+          />
+        </div>
+        <div className="space-y-2">
+          <Label>Date of Birth</Label>
+          <input 
+            type="date"
+            value={editDob ? editDob.split('T')[0] : ''} 
+            onChange={(e) => setEditDob(e.target.value)}
+            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+          />
+        </div>
+      </div>
+
+      <div className="space-y-4 rounded-lg border p-4 bg-muted/30">
+        <Label className="flex items-center gap-2 font-semibold">
+          <Camera className="h-4 w-4 text-primary"/>
+          Update Identity (Face Image)
+        </Label>
+        <div className="flex flex-col gap-4">
+          {isCameraActive ? (
+            <div className="space-y-3">
+              <video ref={videoRef} className="w-full aspect-video rounded-md bg-black" autoPlay muted playsInline />
+              <div className="flex gap-2">
+                <Button onClick={captureImage} className="flex-1">Capture</Button>
+                <Button variant="ghost" onClick={stopCamera}>Cancel</Button>
+              </div>
+            </div>
+          ) : (
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={startCamera} className="flex-1 gap-2"><Camera className="h-4 w-4"/> Use Camera</Button>
+              <Button variant="outline" onClick={() => fileInputRef.current?.click()} className="flex-1 gap-2"><Upload className="h-4 w-4"/> Upload</Button>
+            </div>
+          )}
+          <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleFileUpload} />
+          {faceImage && !isCameraActive && (
+             <div className="flex items-center gap-3 bg-card p-2 rounded-md border">
+               <div className="h-12 w-12 rounded-full overflow-hidden border">
+                 <img src={faceImage} className="h-full w-full object-cover" />
+               </div>
+               <span className="text-xs text-green-600 font-medium flex items-center gap-1"><Check className="h-3 w-3"/> Biometric Updated</span>
+             </div>
+          )}
+        </div>
+      </div>
+
+      {user.role !== 'doctor' && (
+        <>
+          <div className="space-y-3">
+            <Label className="text-base font-semibold">Chronic Conditions</Label>
+            <div className="grid grid-cols-2 gap-2">
+              {COMMON_DISEASES.map((disease) => (
+                <div key={disease} className="flex items-center space-x-2">
+                  <Checkbox 
+                    id={disease} 
+                    checked={selectedDiseases.includes(disease)}
+                    onCheckedChange={(checked) => {
+                      if (checked) setSelectedDiseases([...selectedDiseases, disease]);
+                      else setSelectedDiseases(selectedDiseases.filter(d => d !== disease));
+                    }}
+                  />
+                  <label htmlFor={disease} className="text-[11px] leading-tight">{disease}</label>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label className="text-base font-semibold">Other History</Label>
+            <Textarea 
+              placeholder="List any major allergies or surgeries..."
+              value={manualConditions}
+              onChange={(e) => setManualConditions(e.target.value)}
+            />
+          </div>
+        </>
+      )}
+      
+      <canvas ref={canvasRef} className="hidden" />
+      <div className="flex gap-2 pt-4">
+        <Button className="flex-1" onClick={handleSave}>Save Updates</Button>
+        <Button variant="ghost" onClick={onCancel}>Cancel</Button>
+      </div>
+    </div>
+  );
+}
+
+function DoctorDashboard({ user, onUpdate }: { user: any, onUpdate: (updated: any) => void }) {
+  const [showEdit, setShowEdit] = useState(false);
+
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -83,6 +247,7 @@ function DoctorDashboard({ user }: { user: any }) {
           <p className="text-muted-foreground">Dr. {user.lastName || user.firstName} | {user.specialty || 'Medical Specialist'}</p>
         </div>
         <div className="flex items-center gap-2">
+           <Button variant="outline" size="sm" onClick={() => setShowEdit(true)}>Edit Profile & Face</Button>
            <Badge variant="outline" className="bg-primary/5 text-primary border-primary/20 py-1 px-3">
              <Award className="h-3 w-3 mr-1" /> Gold Rated Provider
            </Badge>
@@ -160,8 +325,8 @@ function DoctorDashboard({ user }: { user: any }) {
 
         <Card className="lg:col-span-3 border-primary/10">
           <CardHeader>
-            <CardTitle>Previous Operations</CardTitle>
-            <CardDescription>Recent surgical outcomes registry.</CardDescription>
+            <CardTitle>Recent Procedures</CardTitle>
+            <CardDescription>Surgical outcomes registry.</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
@@ -184,80 +349,39 @@ function DoctorDashboard({ user }: { user: any }) {
           </CardContent>
         </Card>
       </div>
+
+      <Dialog open={showEdit} onOpenChange={setShowEdit}>
+        <DialogContent className="sm:max-w-[550px]">
+          <DialogHeader>
+            <DialogTitle>Update Medical Staff Profile</DialogTitle>
+            <DialogDescription>Manage your contact and biometric identity.</DialogDescription>
+          </DialogHeader>
+          <ProfileEditForm 
+            user={user} 
+            onSave={(updated) => { onUpdate(updated); setShowEdit(false); }} 
+            onCancel={() => setShowEdit(false)} 
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
 
-function PatientDashboard({ user }: { user: any }) {
-  const { toast } = useToast();
+function PatientDashboard({ user, onUpdate }: { user: any, onUpdate: (updated: any) => void }) {
   const [userAppointments, setUserAppointments] = useState<any[]>([]);
   const [userMedications, setUserMedications] = useState<any[]>([]);
   const [showProfileDialog, setShowProfileDialog] = useState(false);
-  
-  const [selectedDiseases, setSelectedDiseases] = useState<string[]>([]);
-  const [manualConditions, setManualConditions] = useState('');
-  const [editContact, setEditContact] = useState('');
-  const [editDob, setEditDob] = useState<string | undefined>(undefined);
 
   useEffect(() => {
     seedStorage();
     if (user) {
       const allAppointments = getStorageItem<any[]>('appointments', []);
       const allMedications = getStorageItem<any[]>('medications', []);
-
       setUserAppointments(allAppointments.filter(a => a.patientId === user.id || !a.patientId));
       setUserMedications(allMedications.filter(med => med.patientId === user.id || !med.patientId));
-
-      setSelectedDiseases(user.selectedDiseases || []);
-      setManualConditions(user.preExistingConditions || '');
-      setEditContact(user.contactNumber || '');
-      setEditDob(user.dob || user.dateOfBirth || undefined);
-
-      if (!user.selectedDiseases && !user.preExistingConditions && !user.isProfileCompleted) {
-        setShowProfileDialog(true);
-      }
+      if (!user.isProfileCompleted) setShowProfileDialog(true);
     }
   }, [user]);
-
-  const handleSaveProfile = () => {
-    const updatedUser = { 
-      ...user, 
-      selectedDiseases, 
-      preExistingConditions: manualConditions,
-      contactNumber: editContact,
-      dob: editDob,
-      isProfileCompleted: true
-    };
-    
-    // Update active session
-    setStorageItem('currentUser', updatedUser);
-    
-    // Update main collection in LocalStorage
-    const patients = getStorageItem<any[]>('patients', []);
-    const patientIndex = patients.findIndex(p => p.id === user.id);
-    if (patientIndex > -1) {
-      patients[patientIndex] = updatedUser;
-      setStorageItem('patients', patients);
-    }
-
-    // Trigger Notification
-    const notifications = getStorageItem<any[]>('notifications', []);
-    const newNotif = {
-      id: crypto.randomUUID(),
-      title: 'Medical Profile Updated',
-      description: 'Your clinical identity and health records have been securely synchronized.',
-      time: format(new Date(), 'h:mm a'),
-      type: 'profile',
-      read: false
-    };
-    setStorageItem('notifications', [newNotif, ...notifications]);
-    
-    setShowProfileDialog(false);
-    toast({
-      title: "Health Record Synchronized",
-      description: "Your updates are now stored in the clinical database.",
-    });
-  };
 
   const refillsNeededCount = userMedications.filter((m) => m.refillsLeft === 0).length;
 
@@ -357,7 +481,7 @@ function PatientDashboard({ user }: { user: any }) {
           </CardContent>
           <CardFooter>
              <Button variant="outline" size="sm" className="w-full text-xs" onClick={() => setShowProfileDialog(true)}>
-               Update Records
+               Update Records & Identity
              </Button>
           </CardFooter>
         </Card>
@@ -367,63 +491,13 @@ function PatientDashboard({ user }: { user: any }) {
         <DialogContent className="sm:max-w-[550px]">
           <DialogHeader>
             <DialogTitle className="text-2xl font-headline text-primary">Manage Medical Identity</DialogTitle>
-            <DialogDescription>
-              Keep your health history and contact information current.
-            </DialogDescription>
+            <DialogDescription>Keep your health history and biometric identity current.</DialogDescription>
           </DialogHeader>
-          <div className="space-y-6 py-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label>Contact Number</Label>
-                <input 
-                  type="tel" 
-                  value={editContact} 
-                  onChange={(e) => setEditContact(e.target.value)}
-                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>Date of Birth</Label>
-                <input 
-                  type="date"
-                  value={editDob ? editDob.split('T')[0] : ''} 
-                  onChange={(e) => setEditDob(e.target.value)}
-                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                />
-              </div>
-            </div>
-
-            <div className="space-y-3">
-              <Label className="text-base font-semibold">Chronic Conditions</Label>
-              <div className="grid grid-cols-2 gap-3">
-                {COMMON_DISEASES.map((disease) => (
-                  <div key={disease} className="flex items-center space-x-2">
-                    <Checkbox 
-                      id={disease} 
-                      checked={selectedDiseases.includes(disease)}
-                      onCheckedChange={(checked) => {
-                        if (checked) setSelectedDiseases([...selectedDiseases, disease]);
-                        else setSelectedDiseases(selectedDiseases.filter(d => d !== disease));
-                      }}
-                    />
-                    <label htmlFor={disease} className="text-xs">{disease}</label>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label className="text-base font-semibold">Other History</Label>
-              <Textarea 
-                placeholder="List any major allergies or surgeries..."
-                value={manualConditions}
-                onChange={(e) => setManualConditions(e.target.value)}
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button className="w-full" onClick={handleSaveProfile}>Update Local Database</Button>
-          </DialogFooter>
+          <ProfileEditForm 
+            user={user} 
+            onSave={(updated) => { onUpdate(updated); setShowProfileDialog(false); }} 
+            onCancel={() => setShowProfileDialog(false)} 
+          />
         </DialogContent>
       </Dialog>
     </div>
@@ -431,6 +505,7 @@ function PatientDashboard({ user }: { user: any }) {
 }
 
 export default function DashboardPage() {
+  const { toast } = useToast();
   const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
@@ -438,6 +513,33 @@ export default function DashboardPage() {
     const currentUser = getStorageItem('currentUser', null);
     setUser(currentUser);
   }, []);
+
+  const handleUpdate = (updatedUser: any) => {
+    setStorageItem('currentUser', updatedUser);
+    setUser(updatedUser);
+    
+    // Sync with main collections
+    const collectionName = updatedUser.role === 'doctor' ? 'doctors' : 'patients';
+    const items = getStorageItem<any[]>(collectionName, []);
+    const idx = items.findIndex(i => i.id === updatedUser.id);
+    if (idx > -1) {
+      items[idx] = updatedUser;
+      setStorageItem(collectionName, items);
+    }
+
+    // Add notification
+    const notifications = getStorageItem<any[]>('notifications', []);
+    setStorageItem('notifications', [{
+      id: crypto.randomUUID(),
+      title: 'Profile Synchronized',
+      description: 'Your clinical identity and contact records have been updated securely.',
+      time: format(new Date(), 'h:mm a'),
+      type: 'profile',
+      read: false
+    }, ...notifications]);
+
+    toast({ title: "Clinical Update Success", description: "Your profile has been saved to the database." });
+  };
 
   if (!user) {
     return (
@@ -447,5 +549,5 @@ export default function DashboardPage() {
     );
   }
 
-  return user.role === 'doctor' ? <DoctorDashboard user={user} /> : <PatientDashboard user={user} />;
+  return user.role === 'doctor' ? <DoctorDashboard user={user} onUpdate={handleUpdate} /> : <PatientDashboard user={user} onUpdate={handleUpdate} />;
 }

@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -197,9 +198,6 @@ function Header({ user }: { user: any }) {
             {user?.role === 'doctor' ? `Dr. ${user.lastName || user.firstName}` : user?.firstName}
             <p className="text-xs text-muted-foreground font-normal">{user?.role}</p>
           </DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem>Settings</DropdownMenuItem>
-          <DropdownMenuItem>Support</DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem asChild>
             <Link href="/" onClick={() => removeStorageItem('currentUser')}>

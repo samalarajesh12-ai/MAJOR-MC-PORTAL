@@ -99,7 +99,8 @@ export const initialDoctors = [
     experience: 12, 
     email: 'dr.smith@maruthi.clinic', 
     password: '123',
-    license: 'MC-882910'
+    license: 'MC-882910',
+    contactNumber: '+91-98822-1100'
   },
   { 
     id: 'dr-jones', 
@@ -109,7 +110,8 @@ export const initialDoctors = [
     experience: 8, 
     email: 'dr.jones@maruthi.clinic', 
     password: '123',
-    license: 'MC-771822'
+    license: 'MC-771822',
+    contactNumber: '+91-77221-3344'
   },
 ];
   
@@ -144,10 +146,30 @@ export const initialMedicalHistory = {
 };
 
 export const initialBills = [
-  { id: 'bill001', service: 'Cardiology Consultation', date: '2024-08-15', amount: 250, status: 'Paid', paymentMethod: 'Debit Card' },
-  { id: 'bill002', service: 'Blood Lab Work', date: '2024-07-30', amount: 1200, status: 'Paid', paymentMethod: 'UPI' },
+  { 
+    id: 'bill001', 
+    service: 'Cardiology Consultation', 
+    date: '2024-08-15', 
+    amount: 2500, 
+    status: 'Paid', 
+    paymentMethod: 'Debit Card',
+    surgicals: [
+      { name: 'ECG Electrodes', count: 6 },
+      { name: 'Sterile Swabs', count: 10 }
+    ]
+  },
+  { 
+    id: 'bill002', 
+    service: 'Heart Bypass Surgery', 
+    date: '2024-07-30', 
+    amount: 150000, 
+    status: 'Paid', 
+    paymentMethod: 'UPI',
+    surgicals: [
+      { name: 'Surgical Sutures', count: 5 },
+      { name: 'Vascular Graft', count: 1 },
+      { name: 'Anesthesia Kit', count: 1 },
+      { name: 'Surgical Blade', count: 2 }
+    ]
+  },
 ];
-
-export const bills = initialBills;
-export const labResults = initialLabResults;
-export const medicalHistory = initialMedicalHistory;
