@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Bell, Search, LogOut, Stethoscope, Clock, CheckCircle2, AlertCircle, TrendingUp } from 'lucide-react';
+import { Bell, Search, LogOut, Stethoscope, Clock, CheckCircle2, AlertCircle } from 'lucide-react';
 import {
   SidebarProvider,
   Sidebar,
@@ -56,12 +56,15 @@ function Header({ user }: { user: any }) {
       const notified = getStorageItem<string[]>('notified_appointments', []);
 
       appointments.forEach(app => {
-        const appDate = parseISO(`${app.date}T${convertTo24Hour(app.time)}`);
+        const appDateStr = app.date && app.time ? `${app.date}T${convertTo24Hour(app.time)}` : null;
+        if (!appDateStr) return;
+        
+        const appDate = parseISO(appDateStr);
         if (isPast(appDate) && !notified.includes(app.id)) {
           const newNotif = {
             id: crypto.randomUUID(),
             title: 'Appointment Time Reached',
-            description: `A clinical session is starting now.`,
+            description: `A clinical session with ${app.doctor} is starting now.`,
             time: format(new Date(), 'h:mm a'),
             type: 'alert',
             read: false
@@ -89,7 +92,9 @@ function Header({ user }: { user: any }) {
 
   const convertTo24Hour = (timeStr: string) => {
     if (!timeStr) return '00:00';
-    const [time, modifier] = timeStr.split(' ');
+    const parts = timeStr.split(' ');
+    if (parts.length < 2) return timeStr;
+    const [time, modifier] = parts;
     let [hours, minutes] = time.split(':');
     if (hours === '12') hours = '00';
     if (modifier === 'PM') hours = (parseInt(hours, 10) + 12).toString();

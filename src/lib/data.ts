@@ -2,12 +2,10 @@ import {
   CalendarIcon,
   FileTextIcon,
   LayoutDashboardIcon,
-  MessageSquareIcon,
   PillIcon,
   ReceiptTextIcon,
   StethoscopeIcon,
   ActivityIcon,
-  ClipboardListIcon,
   UserCheckIcon,
   TrendingUpIcon
 } from 'lucide-react';
@@ -37,12 +35,10 @@ export const iconMap: { [key: string]: LucideIcon } = {
   LayoutDashboardIcon,
   CalendarIcon,
   PillIcon,
-  MessageSquareIcon,
   FileTextIcon,
   ReceiptTextIcon,
   StethoscopeIcon,
   ActivityIcon,
-  ClipboardListIcon,
   UserCheckIcon,
   TrendingUpIcon
 };
@@ -107,20 +103,6 @@ export const medications = [
     frequency: 'Once a day',
     refillsLeft: 2,
     lastRefill: '2024-07-10',
-  },
-];
-
-export const messages = [
-  {
-    id: 1,
-    sender: 'Dr. John Smith',
-    subject: 'Your recent test results',
-    date: '2024-08-01',
-    read: false,
-    body: "Hello, your recent lab results are in and everything looks normal.",
-    conversation: [
-        { from: "Dr. John Smith", text: "Hello, your recent lab results are in and everything looks normal.", time: "10:30 AM" },
-    ]
   },
 ];
 
