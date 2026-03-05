@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -23,30 +22,27 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
   DialogFooter,
 } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { 
   FileDown, 
   CreditCard, 
   Landmark, 
   Wallet, 
   ShieldCheck, 
-  Plus, 
   Receipt,
   Search,
-  CheckCircle2,
-  Trash2,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  Activity
 } from 'lucide-react';
 import { getStorageItem, setStorageItem, seedStorage } from '@/lib/storage';
 import { useToast } from '@/hooks/use-toast';
-import { format } from 'date-fns';
 
 const paymentMethodIcons = {
     'Debit Card': <CreditCard className="h-4 w-4" />,
@@ -62,7 +58,6 @@ export default function BillsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [expandedBillId, setExpandedBillId] = useState<string | null>(null);
   
-  // Edit State
   const [editingBill, setEditingBill] = useState<any>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
@@ -101,7 +96,7 @@ export default function BillsPage() {
             <Receipt className="h-8 w-8" />
             Medical Bills
           </h1>
-          <p className="text-muted-foreground">View surgical details, taxes, and manage payment methods.</p>
+          <p className="text-muted-foreground">Manage surgical details, taxes (2.5% GST), and payment splits.</p>
         </div>
         <div className="relative max-w-sm w-full">
            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -118,7 +113,7 @@ export default function BillsPage() {
         <CardHeader>
           <CardTitle>Clinical Billing History</CardTitle>
           <CardDescription>
-            All totals include a statutory clinical GST of 2.5%.
+            Grand totals include a statutory clinical GST of 2.5%.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -129,8 +124,8 @@ export default function BillsPage() {
                 <TableHead>Service</TableHead>
                 <TableHead>Date</TableHead>
                 <TableHead>Subtotal</TableHead>
-                <TableHead>Tax (2.5%)</TableHead>
-                <TableHead>Grand Total</TableHead>
+                <TableHead>GST (2.5%)</TableHead>
+                <TableHead>Total</TableHead>
                 <TableHead>Method</TableHead>
                 <TableHead className="text-right">Action</TableHead>
               </TableRow>
@@ -157,9 +152,9 @@ export default function BillsPage() {
                       </TableCell>
                       <TableCell className="font-bold text-primary">{bill.service}</TableCell>
                       <TableCell>{bill.date}</TableCell>
-                      <TableCell>Rs {subtotal.toFixed(2)}</TableCell>
-                      <TableCell className="text-muted-foreground">Rs {gst.toFixed(2)}</TableCell>
-                      <TableCell className="font-bold">Rs {total.toFixed(2)}</TableCell>
+                      <TableCell>Rs {subtotal.toLocaleString()}</TableCell>
+                      <TableCell className="text-muted-foreground">Rs {gst.toLocaleString()}</TableCell>
+                      <TableCell className="font-bold">Rs {total.toLocaleString()}</TableCell>
                       <TableCell>
                         <Badge variant="outline" className="gap-1.5 font-normal">
                           {paymentMethodIcons[bill.paymentMethod as keyof typeof paymentMethodIcons]}
@@ -173,7 +168,7 @@ export default function BillsPage() {
                           className="text-primary"
                           onClick={() => { setEditingBill(bill); setIsEditDialogOpen(true); }}
                         >
-                          Edit Payment
+                          Edit
                         </Button>
                       </TableCell>
                     </TableRow>
@@ -183,7 +178,7 @@ export default function BillsPage() {
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <div className="space-y-3">
                               <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
-                                <Activity className="h-3 w-3" /> Medical Surgicals Used
+                                <Activity className="h-3 w-3" /> Medical Surgicals & Consumables
                               </h4>
                               {bill.surgicals && bill.surgicals.length > 0 ? (
                                 <div className="space-y-2">
@@ -206,7 +201,7 @@ export default function BillsPage() {
                                    <Badge className="bg-green-100 text-green-700">{bill.status}</Badge>
                                  </div>
                                  <div className="flex justify-between text-sm">
-                                   <span>Main Method</span>
+                                   <span>Method</span>
                                    <span className="font-semibold">{bill.paymentMethod}</span>
                                  </div>
                                  {bill.paymentDetails && (
@@ -234,7 +229,7 @@ export default function BillsPage() {
           <DialogHeader>
             <DialogTitle>Update Payment Method</DialogTitle>
             <DialogDescription>
-              Select clinical payment configuration, including split method support.
+              Adjust clinical payment method, including support for split transactions.
             </DialogDescription>
           </DialogHeader>
           {editingBill && (
@@ -245,14 +240,14 @@ export default function BillsPage() {
               </div>
               
               <div className="space-y-2">
-                <Label>Primary Payment Method</Label>
+                <Label>Payment Method</Label>
                 <div className="grid grid-cols-2 gap-2">
                   {Object.keys(paymentMethodIcons).map((method) => (
                     <Button 
                       key={method}
                       variant={editingBill.paymentMethod === method ? 'default' : 'outline'}
                       size="sm"
-                      className="justify-start gap-2"
+                      className="justify-start gap-2 h-9"
                       onClick={() => setEditingBill({ ...editingBill, paymentMethod: method })}
                     >
                       {paymentMethodIcons[method as keyof typeof paymentMethodIcons]}
@@ -264,11 +259,12 @@ export default function BillsPage() {
 
               {editingBill.paymentMethod === 'Split Payment' && (
                 <div className="space-y-3 p-3 bg-primary/5 rounded-md border border-primary/20">
-                   <Label className="text-xs font-bold text-primary">Split Details</Label>
+                   <Label className="text-xs font-bold text-primary">Split Transaction Details</Label>
                    <Textarea 
-                     placeholder="e.g., Rs 1000 paid in Cash, Remaining Rs 1500 via UPI."
+                     placeholder="e.g., Rs 500 paid in Cash, Rs 2000 via UPI."
                      value={editingBill.paymentDetails || ''}
                      onChange={(e) => setEditingBill({...editingBill, paymentDetails: e.target.value})}
+                     className="min-h-[80px]"
                    />
                 </div>
               )}

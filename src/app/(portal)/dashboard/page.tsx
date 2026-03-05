@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
@@ -39,6 +38,7 @@ import {
   Check
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
 import { getStorageItem, setStorageItem, seedStorage } from '@/lib/storage';
 import {
   Dialog,
@@ -143,20 +143,18 @@ function ProfileEditForm({ user, onSave, onCancel }: { user: any, onSave: (updat
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label>Contact Number</Label>
-          <input 
+          <Input 
             type="tel" 
             value={editContact} 
             onChange={(e) => setEditContact(e.target.value)}
-            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
           />
         </div>
         <div className="space-y-2">
           <Label>Date of Birth</Label>
-          <input 
+          <Input 
             type="date"
             value={editDob ? editDob.split('T')[0] : ''} 
             onChange={(e) => setEditDob(e.target.value)}
-            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
           />
         </div>
       </div>
@@ -185,7 +183,7 @@ function ProfileEditForm({ user, onSave, onCancel }: { user: any, onSave: (updat
           {faceImage && !isCameraActive && (
              <div className="flex items-center gap-3 bg-card p-2 rounded-md border">
                <div className="h-12 w-12 rounded-full overflow-hidden border">
-                 <img src={faceImage} className="h-full w-full object-cover" />
+                 <img src={faceImage} className="h-full w-full object-cover" alt="Identity Preview" />
                </div>
                <span className="text-xs text-green-600 font-medium flex items-center gap-1"><Check className="h-3 w-3"/> Biometric Updated</span>
              </div>
@@ -473,7 +471,7 @@ function PatientDashboard({ user, onUpdate }: { user: any, onUpdate: (updated: a
             <div className="space-y-2">
               <Label className="text-[10px] uppercase font-bold text-muted-foreground">Medical History</Label>
               <div className="flex flex-wrap gap-1.5">
-                {user.selectedDiseases?.map((d: string) => (
+                {Array.isArray(user.selectedDiseases) && user.selectedDiseases.map((d: string) => (
                   <Badge key={d} variant="secondary" className="text-[10px] py-0">{d}</Badge>
                 ))}
               </div>
@@ -518,7 +516,6 @@ export default function DashboardPage() {
     setStorageItem('currentUser', updatedUser);
     setUser(updatedUser);
     
-    // Sync with main collections
     const collectionName = updatedUser.role === 'doctor' ? 'doctors' : 'patients';
     const items = getStorageItem<any[]>(collectionName, []);
     const idx = items.findIndex(i => i.id === updatedUser.id);
@@ -527,7 +524,6 @@ export default function DashboardPage() {
       setStorageItem(collectionName, items);
     }
 
-    // Add notification
     const notifications = getStorageItem<any[]>('notifications', []);
     setStorageItem('notifications', [{
       id: crypto.randomUUID(),

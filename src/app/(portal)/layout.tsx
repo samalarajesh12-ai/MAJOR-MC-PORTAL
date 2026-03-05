@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -50,7 +49,7 @@ function Header({ user }: { user: any }) {
     };
 
     syncNotifications();
-    const interval = setInterval(syncNotifications, 2000);
+    const interval = setInterval(syncNotifications, 5000);
 
     const checkAppointments = () => {
       const appointments = getStorageItem<any[]>('appointments', []);
@@ -113,7 +112,7 @@ function Header({ user }: { user: any }) {
     <header className="flex h-14 items-center gap-4 border-b bg-card px-4 lg:h-[60px] lg:px-6">
       <SidebarTrigger className="md:hidden" />
       <div className="w-full flex-1">
-        <form>
+        <form onSubmit={(e) => e.preventDefault()}>
           <div className="relative">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
