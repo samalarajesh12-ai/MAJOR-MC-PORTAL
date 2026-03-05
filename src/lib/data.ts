@@ -23,7 +23,6 @@ export const navItems: NavItem[] = [
   { href: '/dashboard', label: 'Dashboard', iconName: 'LayoutDashboardIcon' },
   { href: '/appointments', label: 'Appointments', iconName: 'CalendarIcon' },
   { href: '/medications', label: 'Medications', iconName: 'PillIcon' },
-  { href: '/messages', label: 'Messages', iconName: 'MessageSquareIcon' },
   { href: '/records', label: 'Health Records', iconName: 'FileTextIcon' },
   { href: '/bills', label: 'Bills', iconName: 'ReceiptTextIcon' },
 ];
@@ -32,8 +31,6 @@ export const doctorNavItems: NavItem[] = [
   { href: '/dashboard', label: 'Performance', iconName: 'TrendingUpIcon' },
   { href: '/doctor/operations', label: 'Operations History', iconName: 'ActivityIcon' },
   { href: '/doctor/attendance', label: 'Daily Attendance', iconName: 'UserCheckIcon' },
-  { href: '/messages', label: 'Clinical Comms', iconName: 'MessageSquareIcon' },
-  { href: '/appointments', label: 'Consultations', iconName: 'CalendarIcon' },
 ];
 
 export const iconMap: { [key: string]: LucideIcon } = {

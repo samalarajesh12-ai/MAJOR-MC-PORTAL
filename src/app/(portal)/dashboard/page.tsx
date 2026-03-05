@@ -23,7 +23,6 @@ import {
 import {
   ArrowUpRight,
   Calendar as CalendarIconIcon,
-  MessageSquare,
   Pill,
   ShieldCheck,
   Plus,
@@ -273,7 +272,6 @@ function DoctorDashboard({ user }: { user: any }) {
 function PatientDashboard({ user }: { user: any }) {
   const { toast } = useToast();
   const [userAppointments, setUserAppointments] = useState<any[]>([]);
-  const [userMessages, setUserMessages] = useState<any[]>([]);
   const [userMedications, setUserMedications] = useState<any[]>([]);
   const [showProfileDialog, setShowProfileDialog] = useState(false);
   
@@ -286,11 +284,9 @@ function PatientDashboard({ user }: { user: any }) {
     seedStorage();
     if (user) {
       const allAppointments = getStorageItem<any[]>('appointments', []);
-      const allMessages = getStorageItem<any[]>('messages', []);
       const allMedications = getStorageItem<any[]>('medications', []);
 
       setUserAppointments(allAppointments.filter(a => a.patientId === user.id || !a.patientId));
-      setUserMessages(allMessages.filter(m => m.receiverId === user.id || !m.receiverId));
       setUserMedications(allMedications.filter(med => med.patientId === user.id || !med.patientId));
 
       setSelectedDiseases(user.selectedDiseases || []);
@@ -340,7 +336,6 @@ function PatientDashboard({ user }: { user: any }) {
     });
   };
 
-  const unreadMessagesCount = userMessages.filter((m) => !m.read).length;
   const refillsNeededCount = userMedications.filter((m) => m.refillsLeft === 0).length;
 
   return (
@@ -359,7 +354,7 @@ function PatientDashboard({ user }: { user: any }) {
         </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-2">
         <Card className="border-primary/20 bg-card shadow-sm hover:shadow-md transition-shadow">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Upcoming Appointments</CardTitle>
@@ -368,16 +363,6 @@ function PatientDashboard({ user }: { user: any }) {
           <CardContent>
             <div className="text-2xl font-bold">{userAppointments.length}</div>
             <p className="text-xs text-muted-foreground mt-1">You have {userAppointments.length} sessions scheduled.</p>
-          </CardContent>
-        </Card>
-        <Card className="border-primary/20 bg-card shadow-sm hover:shadow-md transition-shadow">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Unread Messages</CardTitle>
-            <div className="bg-primary/10 p-2 rounded-full"><MessageSquare className="h-4 w-4 text-primary" /></div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{unreadMessagesCount}</div>
-            <p className="text-xs text-muted-foreground mt-1">Updates from your healthcare team.</p>
           </CardContent>
         </Card>
         <Card className="border-primary/20 bg-card shadow-sm hover:shadow-md transition-shadow">

@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -21,7 +20,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { getStorageItem, setStorageItem, seedStorage } from '@/lib/storage';
 import { useToast } from '@/hooks/use-toast';
-import { Pill, MessageSquare, CheckCircle2 } from 'lucide-react';
+import { Pill, CheckCircle2 } from 'lucide-react';
 import { format } from 'date-fns';
 
 export default function MedicationsPage() {
@@ -45,26 +44,7 @@ export default function MedicationsPage() {
     setMedications(updatedMedications);
     setStorageItem('medications', updatedMedications);
 
-    // 2. Create a new message in history
-    const messages = getStorageItem<any[]>('messages', []);
-    const newMessage = {
-      id: crypto.randomUUID(),
-      sender: 'You',
-      subject: `Refill Request: ${med.name}`,
-      date: format(new Date(), 'yyyy-MM-dd'),
-      read: true,
-      body: `I would like to request a refill for ${med.name} (${med.dosage}). My current refills left are ${med.refillsLeft}.`,
-      conversation: [
-        {
-          from: "You",
-          text: `Automatic Request: Please refill my ${med.name} (${med.dosage}) prescription.`,
-          time: format(new Date(), 'h:mm a')
-        }
-      ]
-    };
-    setStorageItem('messages', [newMessage, ...messages]);
-
-    // 3. Create a notification
+    // 2. Create a notification
     const notifications = getStorageItem<any[]>('notifications', []);
     const newNotif = {
       id: crypto.randomUUID(),
@@ -76,10 +56,10 @@ export default function MedicationsPage() {
     };
     setStorageItem('notifications', [newNotif, ...notifications]);
 
-    // 4. Show confirmation notification
+    // 3. Show confirmation notification
     toast({
       title: "Refill Request Sent",
-      description: `Your request for ${med.name} has been sent to the clinic staff. Check your messages for updates.`,
+      description: `Your request for ${med.name} has been sent to the clinic staff.`,
       action: (
         <div className="flex items-center bg-green-500/10 p-1 rounded">
           <CheckCircle2 className="h-4 w-4 text-green-600" />
@@ -143,7 +123,6 @@ export default function MedicationsPage() {
                         onClick={() => handleRequestRefill(med)}
                         className="gap-2"
                       >
-                        <MessageSquare className="h-3 w-3" />
                         Request Refill
                       </Button>
                     )}
