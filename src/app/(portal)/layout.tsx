@@ -1,9 +1,8 @@
-
 'use client';
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Bell, Search, LogOut, Stethoscope, Clock, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Bell, Search, LogOut, Stethoscope, Clock, CheckCircle2, AlertCircle, TrendingUp } from 'lucide-react';
 import {
   SidebarProvider,
   Sidebar,
@@ -31,7 +30,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { navItems } from '@/lib/data';
+import { navItems, doctorNavItems } from '@/lib/data';
 import NavItems from './_components/nav-items';
 import { getStorageItem, setStorageItem, removeStorageItem } from '@/lib/storage';
 import { format, isPast, parseISO } from 'date-fns';
@@ -43,7 +42,6 @@ function Header({ user }: { user: any }) {
   const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => {
-    // Sync notifications from storage
     const syncNotifications = () => {
       const stored = getStorageItem<any[]>('notifications', []);
       setNotifications(stored);
@@ -51,22 +49,19 @@ function Header({ user }: { user: any }) {
     };
 
     syncNotifications();
-    const interval = setInterval(syncNotifications, 2000); // Poll storage for updates
+    const interval = setInterval(syncNotifications, 2000);
 
-    // Appointment Check Logic
     const checkAppointments = () => {
       const appointments = getStorageItem<any[]>('appointments', []);
       const notified = getStorageItem<string[]>('notified_appointments', []);
-      const now = new Date();
 
       appointments.forEach(app => {
         const appDate = parseISO(`${app.date}T${convertTo24Hour(app.time)}`);
         if (isPast(appDate) && !notified.includes(app.id)) {
-          // Trigger Appointment Notification
           const newNotif = {
             id: crypto.randomUUID(),
             title: 'Appointment Time Reached',
-            description: `Your session with ${app.doctor} in ${app.department} is starting now.`,
+            description: `A clinical session is starting now.`,
             time: format(new Date(), 'h:mm a'),
             type: 'alert',
             read: false
@@ -78,14 +73,13 @@ function Header({ user }: { user: any }) {
           
           toast({
             title: "Appointment Reminder",
-            description: `It's time for your clinical visit with ${app.doctor}.`,
-            variant: "default"
+            description: "A clinical session is scheduled for now.",
           });
         }
       });
     };
 
-    const appInterval = setInterval(checkAppointments, 30000); // Check every 30 seconds
+    const appInterval = setInterval(checkAppointments, 30000);
 
     return () => {
       clearInterval(interval);
@@ -94,6 +88,7 @@ function Header({ user }: { user: any }) {
   }, [toast]);
 
   const convertTo24Hour = (timeStr: string) => {
+    if (!timeStr) return '00:00';
     const [time, modifier] = timeStr.split(' ');
     let [hours, minutes] = time.split(':');
     if (hours === '12') hours = '00';
@@ -117,7 +112,7 @@ function Header({ user }: { user: any }) {
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
               type="search"
-              placeholder="Search medical records..."
+              placeholder={user?.role === 'doctor' ? "Search clinical cases..." : "Search medical records..."}
               className="w-full appearance-none bg-background pl-8 shadow-none md:w-2/3 lg:w-1/3"
             />
           </div>
@@ -136,7 +131,6 @@ function Header({ user }: { user: any }) {
                 {unreadCount}
               </Badge>
             )}
-            <span className="sr-only">Toggle notifications</span>
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-80 p-0" align="end">
@@ -176,11 +170,6 @@ function Header({ user }: { user: any }) {
               </div>
             )}
           </ScrollArea>
-          <div className="p-2 border-t">
-            <Button variant="ghost" className="w-full text-xs h-8 text-primary" asChild>
-              <Link href="/messages">View Communication History</Link>
-            </Button>
-          </div>
         </PopoverContent>
       </Popover>
 
@@ -196,11 +185,13 @@ function Header({ user }: { user: any }) {
               )}
               <AvatarFallback>{user?.firstName?.charAt(0) || 'U'}</AvatarFallback>
             </Avatar>
-            <span className="sr-only">Toggle user menu</span>
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuLabel>My Account</DropdownMenuLabel>
+          <DropdownMenuLabel>
+            {user?.role === 'doctor' ? `Dr. ${user.lastName || user.firstName}` : user?.firstName}
+            <p className="text-xs text-muted-foreground font-normal">{user?.role}</p>
+          </DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem>Settings</DropdownMenuItem>
           <DropdownMenuItem>Support</DropdownMenuItem>
@@ -229,6 +220,8 @@ export default function PortalLayout({
     setUser(currentUser);
   }, []);
 
+  const activeNavItems = user?.role === 'doctor' ? doctorNavItems : navItems;
+
   return (
     <SidebarProvider>
       <Sidebar>
@@ -242,7 +235,7 @@ export default function PortalLayout({
         </SidebarHeader>
         <SidebarContent>
           <SidebarMenu>
-            <NavItems items={navItems} />
+            <NavItems items={activeNavItems} />
           </SidebarMenu>
         </SidebarContent>
       </Sidebar>
