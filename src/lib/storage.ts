@@ -1,7 +1,14 @@
 /**
  * Utility functions for interacting with localStorage safely in a Next.js environment.
  */
-import { appointments, medications, messages, bills, labResults, medicalHistory } from './data';
+import { 
+  initialAppointments, 
+  initialMedications, 
+  initialBills, 
+  initialLabResults, 
+  initialMedicalHistory,
+  initialDoctors 
+} from './data';
 
 export const getStorageItem = <T>(key: string, defaultValue: T): T => {
   if (typeof window === 'undefined') return defaultValue;
@@ -30,24 +37,30 @@ export const removeStorageItem = (key: string): void => {
 
 /**
  * Seeds localStorage with initial data if it doesn't already exist.
- * This ensures that even on first load, there's data to display.
+ * This ensures that even on first load (especially on Vercel), there's data to display.
  */
 export const seedStorage = () => {
   if (typeof window === 'undefined') return;
 
-  // We are skipping initial seeding of 'doctors' as per user request to start fresh.
-  if (!localStorage.getItem('seed_v2')) {
-    if (!localStorage.getItem('appointments')) setStorageItem('appointments', appointments);
-    if (!localStorage.getItem('medications')) setStorageItem('medications', medications);
-    if (!localStorage.getItem('messages')) setStorageItem('messages', messages);
-    if (!localStorage.getItem('bills')) setStorageItem('bills', bills);
+  const SEED_KEY = 'maruthi_seed_v3';
+
+  if (!localStorage.getItem(SEED_KEY)) {
+    // Patients starts empty until someone registers
+    if (!localStorage.getItem('patients')) setStorageItem('patients', []);
     
-    // Explicitly set doctors to empty if not already present, to clear initial staff
-    if (!localStorage.getItem('doctors')) setStorageItem('doctors', []);
+    // Initial doctors for testing
+    if (!localStorage.getItem('doctors')) setStorageItem('doctors', initialDoctors);
     
-    if (!localStorage.getItem('labResults')) setStorageItem('labResults', labResults);
-    if (!localStorage.getItem('medicalHistory')) setStorageItem('medicalHistory', medicalHistory);
+    // Clinical data
+    if (!localStorage.getItem('appointments')) setStorageItem('appointments', initialAppointments);
+    if (!localStorage.getItem('medications')) setStorageItem('medications', initialMedications);
+    if (!localStorage.getItem('bills')) setStorageItem('bills', initialBills);
+    if (!localStorage.getItem('labResults')) setStorageItem('labResults', initialLabResults);
+    if (!localStorage.getItem('medicalHistory')) setStorageItem('medicalHistory', initialMedicalHistory);
     
-    localStorage.setItem('seed_v2', 'true');
+    // Notifications start empty
+    if (!localStorage.getItem('notifications')) setStorageItem('notifications', []);
+    
+    localStorage.setItem(SEED_KEY, 'true');
   }
 };

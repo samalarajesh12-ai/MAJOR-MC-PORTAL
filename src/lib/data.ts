@@ -70,8 +70,7 @@ export const dailyAttendance = [
   { date: '2024-02-11', status: 'Present', shift: 'Day', hours: 8.5 },
 ];
 
-// Seed data for appointments (shared)
-export const appointments = [
+export const initialAppointments = [
   {
     id: 'app1',
     doctor: 'Dr. John Smith',
@@ -90,12 +89,30 @@ export const appointments = [
   },
 ];
 
-export const doctors = [
-    { id: 'dr-smith', name: 'Dr. John Smith', specialty: 'Cardiology', experience: 12, email: 'dr.smith@maruthi.clinic' },
-    { id: 'dr-jones', name: 'Dr. Sarah Jones', specialty: 'Dermatology', experience: 8, email: 'dr.jones@maruthi.clinic' },
-  ];
+export const initialDoctors = [
+  { 
+    id: 'dr-smith', 
+    firstName: 'John', 
+    lastName: 'Smith', 
+    specialty: 'Cardiology', 
+    experience: 12, 
+    email: 'dr.smith@maruthi.clinic', 
+    password: '123',
+    license: 'MC-882910'
+  },
+  { 
+    id: 'dr-jones', 
+    firstName: 'Sarah', 
+    lastName: 'Jones', 
+    specialty: 'Dermatology', 
+    experience: 8, 
+    email: 'dr.jones@maruthi.clinic', 
+    password: '123',
+    license: 'MC-771822'
+  },
+];
   
-export const medications = [
+export const initialMedications = [
   {
     id: 1,
     name: 'Lisinopril',
@@ -104,18 +121,28 @@ export const medications = [
     refillsLeft: 2,
     lastRefill: '2024-07-10',
   },
+  {
+    id: 2,
+    name: 'Metformin',
+    dosage: '500mg',
+    frequency: 'Twice a day',
+    refillsLeft: 0,
+    lastRefill: '2024-06-15',
+  },
 ];
 
-export const labResults = [
+export const initialLabResults = [
   { id: 'lab001', testName: 'Complete Blood Count (CBC)', date: '2024-07-30', status: 'Normal' },
+  { id: 'lab002', testName: 'Lipid Profile', date: '2024-07-30', status: 'Normal' },
 ];
 
-export const medicalHistory = {
+export const initialMedicalHistory = {
   allergies: [{ name: 'Penicillin', reaction: 'Hives' }],
   surgeries: [{ name: 'Appendectomy', date: '2015' }],
   conditions: [{ name: 'Hypertension', diagnosed: '2020' }],
 };
 
-export const bills = [
-    { id: 'bill001', service: 'Cardiology Consultation', date: '2024-08-15', amount: 250, status: 'Paid', paymentMethod: 'Debit Card' },
-  ];
+export const initialBills = [
+  { id: 'bill001', service: 'Cardiology Consultation', date: '2024-08-15', amount: 250, status: 'Paid', paymentMethod: 'Debit Card' },
+  { id: 'bill002', service: 'Blood Lab Work', date: '2024-07-30', amount: 1200, status: 'Paid', paymentMethod: 'UPI' },
+];

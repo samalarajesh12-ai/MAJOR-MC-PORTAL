@@ -32,7 +32,7 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { navItems, doctorNavItems } from '@/lib/data';
 import NavItems from './_components/nav-items';
-import { getStorageItem, setStorageItem, removeStorageItem } from '@/lib/storage';
+import { getStorageItem, setStorageItem, removeStorageItem, seedStorage } from '@/lib/storage';
 import { format, isPast, parseISO } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 
@@ -221,6 +221,7 @@ export default function PortalLayout({
   const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
+    seedStorage();
     const currentUser = getStorageItem('currentUser', null);
     setUser(currentUser);
   }, []);
