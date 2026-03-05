@@ -1,4 +1,4 @@
-# MARUTHI CLINIC PORTAL
+# MARUTHI CLINIC PORTAL (v1.0.0)
 
 A professional, data-driven clinic management system built with the **Next.js + Firebase + ShadCN** preset.
 
@@ -9,6 +9,13 @@ A professional, data-driven clinic management system built with the **Next.js + 
 - **Icons**: Lucide React
 - **Database**: Local Storage (Current) / Firebase Firestore (Ready)
 - **Authentication**: Custom Biometric Logic / Firebase Auth (Ready)
+
+## Version 1.0.0 Features
+- **Doctor Portal**: Specialized interface for surgical performance analytics and operation registries.
+- **Patient Portal**: Focused dashboard for chronic disease profiling and chronological visit tracking.
+- **Biometric Identity**: Secure registration with webcam capture or professional portrait upload.
+- **Persistence**: Automatic background synchronization with browser storage.
+- **Currency**: Localized clinical billing in Rupees (Rs).
 
 ## Understanding Data Storage
 This application currently uses a **Local Storage Database** (`localStorage`) to store all clinical records, registrations, and updates. 
@@ -24,7 +31,7 @@ This application currently uses a **Local Storage Database** (`localStorage`) to
    ```bash
    git init
    git add .
-   git commit -m "Final: Professional Clinic Portal with AI and Analytics"
+   git commit -m "Final: Professional Clinic Portal v1.0.0 with AI and Analytics"
    ```
 
 2. **Publish to GitHub**:
@@ -41,9 +48,3 @@ This application currently uses a **Local Storage Database** (`localStorage`) to
    - Click "Add New" -> "Project".
    - Import your GitHub repo.
    - Click **Deploy**.
-
-## Features
-- **Doctor Portal**: Specialized interface for surgical performance analytics and operation registries.
-- **Patient Portal**: Focused dashboard for chronic disease profiling and chronological visit tracking.
-- **Biometric Identity**: Secure registration with webcam capture or professional portrait upload.
-- **Persistence**: Automatic background synchronization with browser storage.
